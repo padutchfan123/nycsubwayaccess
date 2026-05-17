@@ -347,9 +347,11 @@ CREATE TABLE access AS
 
 ## Map
 
-### `mappluto` parcels with a `final_dist` of 1320 or lower
+### `mappluto` parcels with a `final_dist` of 1320 ft or lower
 
 ![map1](/figures/map1.png)
+
+***
 
 # Analyze access
 
