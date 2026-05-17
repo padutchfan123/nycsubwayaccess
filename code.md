@@ -2,15 +2,25 @@
 layout: home
 title: Code
 ---
+
+## *Computational environment*
+
+All queries were ran in QGIS (version 3.40.5-Bratislava) in DB Manager. The PostgreSQL server on which the data was stored and queried from had the following extensions:
+- PostGIS (version 3.1.0)
+- PL/pgSQL (version 1.0)
+- pgRouting (version 3.1.2)
+
+***
+
 # Workflow diagram
 
 ### (add here)
 
 ## SQL Scripts
 
-### (link here)
+### Available in project [repository]()
 
-# Section 1
+# Main queries
 
 ### (Description of purpose of section 1)
 
@@ -22,10 +32,10 @@ Create a point on surface geometry `pos_geom` for `mappluto` tax parcels using *
 
 ```sql
 ALTER TABLE mappluto
-ADD COLUMN pos_geom geometry(Point, 2263);
+    ADD COLUMN pos_geom geometry(Point, 2263);
 
 UPDATE mappluto
-SET pos_geom = ST_PointOnSurface(geom);
+    SET pos_geom = ST_PointOnSurface(geom);
 ```
 
 ***
@@ -37,7 +47,7 @@ Create a network-snapped geometry `network_snap` for `mappluto` and `subway_ee` 
 ### Parcels
 ```sql
 ALTER TABLE mappluto 
-ADD COLUMN network_snap geometry(Point, 2263);
+    ADD COLUMN network_snap geometry(Point, 2263);
 
 UPDATE mappluto p
     SET network_snap = sub.snapped_geom
@@ -58,7 +68,7 @@ UPDATE mappluto p
 ### Subway points
 ```sql
 ALTER TABLE subway_ee 
-ADD COLUMN network_snap geometry(Point, 2263);
+    ADD COLUMN network_snap geometry(Point, 2263);
 
 UPDATE subway_ee s
     SET network_snap = sub.snapped_geom
@@ -104,7 +114,9 @@ SELECT pgr_analyzeGraph(
     'id'
 );
 
-ALTER TABLE lion ADD COLUMN cost DOUBLE PRECISION;
+ALTER TABLE lion 
+    ADD COLUMN cost DOUBLE PRECISION;
+
 UPDATE lion SET cost = ST_Length(geom);
 ```
 
@@ -122,7 +134,8 @@ CREATE INDEX ON subway_ee USING GIST(network_snap);
 ```
 ### Parcels
 ```sql
-ALTER TABLE mappluto ADD COLUMN vid BIGINT;
+ALTER TABLE mappluto 
+    ADD COLUMN vid BIGINT;
 
 UPDATE mappluto p
     SET vid = v.id
@@ -137,7 +150,8 @@ UPDATE mappluto p
 ```
 ### Subway points
 ```sql
-ALTER TABLE subway_ee ADD COLUMN vid BIGINT;
+ALTER TABLE subway_ee 
+    ADD COLUMN vid BIGINT;
 
 UPDATE subway_ee s
     SET vid = v.id
@@ -328,3 +342,11 @@ CREATE TABLE access AS
     SELECT * FROM mappluto
     WHERE final_dist <= 1320;
 ```
+
+# Analyze access
+
+### (Description of purpose of section 2)
+
+***
+
+## Step 7
