@@ -18,7 +18,7 @@ All queries were ran in QGIS (version 3.40.5-Bratislava) in DB Manager. The Post
 
 ## SQL Scripts
 
-### Available in project [repository]()
+### Available in project [repository](https://github.com/padutchfan123/nycsubwayaccess/tree/main/queries)
 
 # Main queries
 
