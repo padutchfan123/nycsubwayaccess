@@ -343,6 +343,14 @@ CREATE TABLE access AS
     WHERE final_dist <= 1320;
 ```
 
+***
+
+## Map
+
+### `mappluto` parcels with a `final_dist` of 1320 or lower
+
+![map1]()
+
 # Analyze access
 
 ### (Description of purpose of section 2)
