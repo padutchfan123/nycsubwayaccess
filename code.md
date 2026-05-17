@@ -155,7 +155,7 @@ UPDATE subway_ee s
 
 ## Step 5
 
-Network analysis using **pgr_drivingDistance**, from `subway_ee` points to all network vertices within 1320 ft (1/4 mile) network distance. Before that, create indices to prepare for final analysis queries.
+Informative network analysis using **pgr_drivingDistance**, from `subway_ee` points to all network vertices within 1320 ft (1/4 mile) network distance. Before that, create indices to prepare for final analysis queries.
 
 ### Create indices
 ```sql
