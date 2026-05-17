@@ -14,6 +14,8 @@ title: Code
 
 ### (Description of purpose of section 1)
 
+***
+
 ## Step 1
 
 Create a point on surface geometry `pos_geom` for `mappluto` tax parcels using **ST_PointOnSurface**.
@@ -25,6 +27,8 @@ ADD COLUMN pos_geom geometry(Point, 2263);
 UPDATE mappluto
 SET pos_geom = ST_PointOnSurface(geom);
 ```
+
+***
 
 ## Step 2
 
@@ -73,6 +77,8 @@ UPDATE subway_ee s
     WHERE s.id = sub.id;
 ```
 
+***
+
 ## Step 3
 
 Set up `lion` edge network for analysis using **pgr_createTopology**, and add `source`, `target`, and `cost` columns. **pgr_createTopology** creates the network vertices table `lion_vertices_pgr`.
@@ -101,6 +107,8 @@ SELECT pgr_analyzeGraph(
 ALTER TABLE lion ADD COLUMN cost DOUBLE PRECISION;
 UPDATE lion SET cost = ST_Length(geom);
 ```
+
+***
 
 ## Step 4
 
@@ -143,6 +151,8 @@ UPDATE subway_ee s
     WHERE s.id = s2.id;
 ```
 
+***
+
 ## Step 5
 
 Network analysis using **pgr_drivingDistance**, from `subway_ee` points to all network vertices within 1320 ft (1/4 mile) network distance. Before that, create indices to prepare for final analysis queries.
@@ -176,6 +186,9 @@ CREATE TABLE dd_nyc AS
         ON p.vid = dd.node;
 ```
 *Note: Runtime was just over 23 minutes*
+
+***
+
 ## Step 6
 
 Calculative cumulative distance from each subway point to parcel `network_snap` point on surface, to create a final distance `final_dist` column.
@@ -263,10 +276,55 @@ UPDATE mappluto p
 
 ### Find euclidean distances from `network_snap` points to their edge's `source` and `target` vertices.
 ```sql
+ALTER TABLE mappluto
+    ADD COLUMN eu_s_dist double precision,
+    ADD COLUMN eu_t_dist double precision;
 
+UPDATE mappluto p
+    SET eu_s_dist = ST_Distance(
+        p.network_snap,
+        v.the_geom
+    )
+    FROM lion_vertices_pgr v
+    WHERE p.source = v.id;
+
+UPDATE mappluto p
+    SET eu_t_dist = ST_Distance(
+        p.network_snap,
+        v.the_geom
+    )
+    FROM lion_vertices_pgr v
+    WHERE p.target = v.id;
+```
+*Note: Runtime was around 23 minutes to populate each distance column*
+
+### Calculate cumulative distances for each parcel's `source` and `target` vertices
+```sql
+ALTER TABLE mappluto
+    ADD COLUMN source_sum double precision,
+    ADD COLUMN target_sum double precision;
+
+UPDATE mappluto
+    SET source_sum = source_nw_dist + eu_s_dist,
+        target_sum = target_nw_dist + eu_t_dist;
 ```
 
-### Next
+### Calculate `final_dist`
 ```sql
+ALTER TABLE mappluto
+    ADD COLUMN final_dist double precision;
 
+UPDATE mappluto
+    SET final_dist = CASE
+        WHEN source_sum IS NULL THEN target_sum
+        WHEN target_sum IS NULL THEN source_sum
+        ELSE LEAST(source_sum, target_sum)
+    END;
+```
+
+### Create table of only parcels with access
+```sql
+CREATE TABLE access AS
+    SELECT * FROM mappluto
+    WHERE final_dist <= 1320;
 ```
