@@ -349,7 +349,7 @@ CREATE TABLE access AS
 
 ### `mappluto` parcels with a `final_dist` of 1320 or lower
 
-![map1]()
+![map1](/figures/map1.png)
 
 # Analyze access
 
