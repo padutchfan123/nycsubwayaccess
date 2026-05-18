@@ -2,9 +2,8 @@
 layout: home
 title: Discussion
 ---
-
-discussion + acknowledgments
-
-llm?
-
+discussion
 room for expansion of analysis?
+
+acknowledgments
+llm usage for code debugging
