@@ -10,6 +10,8 @@ All queries were ran in QGIS (version 3.40.5-Bratislava) in DB Manager. The Post
 - PL/pgSQL (version 1.0)
 - pgRouting (version 3.1.2)
 
+Online resources consulted for this analysis included the [PostGIS Manual](https://postgis.net/docs/manual-3.1/index.html), [pgRouting Manual](https://access.crunchydata.com/documentation/pgrouting/3.1.3/), as well as artificial intelligence for debugging (free versions of GitHub Copilot and ChatGPT).
+
 ***
 
 # Workflow diagram
