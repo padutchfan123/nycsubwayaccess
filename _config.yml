@@ -2,7 +2,7 @@ theme: minima
 title: NYC Subway Access
 description: Sam Barnard's senior research project with Professor Joe Holler at Middlebury College.
 header_pages:
-  - home.md
+  - index.md
   - background.md
   - data_sources.md
   - code.md
