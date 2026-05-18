@@ -361,6 +361,12 @@ CREATE TABLE access AS
 
 ## Step 7
 
+description
+
+```sql
+
+```
+
 `ntas` - summary, map of % access of parcels by nta
 
 `boroughs` - summary of % access of parcels by borough
