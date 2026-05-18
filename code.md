@@ -360,3 +360,7 @@ CREATE TABLE access AS
 ***
 
 ## Step 7
+
+`nta` - summary, map of % access of parcels by nta
+
+`borough` - summary of % access of parcels by borough
