@@ -361,6 +361,8 @@ CREATE TABLE access AS
 
 # Subway access at the NTA (Neighborhood Tabulation Area) level
 
+***
+
 ## Step 7
 
 Create columns in `ntas` table and add `ntaname` column to `mappluto`.
