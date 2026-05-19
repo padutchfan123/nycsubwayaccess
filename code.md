@@ -16,11 +16,13 @@ Online resources consulted for this analysis included the [PostGIS Manual](https
 
 # Workflow diagram
 
-### (add here)
+### ![workflow](/figures/workflow.png)
 
 ## SQL Scripts
 
 ### Available in project [repository](https://github.com/padutchfan123/nycsubwayaccess/tree/main/queries)
+
+***
 
 # Main queries
 
@@ -233,7 +235,7 @@ CREATE TABLE dd_nyc_min AS
 CREATE INDEX ON dd_nyc_min(vid);
 ```
 *Note: Runtime was just over 23 minutes*
-### Join edge, source, and target columns to `mappluto` from `lion`
+### Join `edge`, `source`, and `target` columns to `mappluto` from `lion`
 Use **<->** operator to find closest edge.
 ```sql
     -- create spatial index
@@ -270,7 +272,7 @@ UPDATE mappluto p
     WHERE p.id = l.pid;
 ```
 
-### Join source and target network distances to `mappluto` from `dd_nyc_min`
+### Join `source` and `target` network distances to `mappluto` from `dd_nyc_min`
 ```sql
     -- create indices
 CREATE INDEX ON mappluto(source);
@@ -327,7 +329,7 @@ UPDATE mappluto
         target_sum = target_nw_dist + eu_t_dist;
 ```
 
-### Calculate `final_dist`
+### Determine `final_dist`
 ```sql
 ALTER TABLE mappluto
     ADD COLUMN final_dist double precision;
@@ -351,7 +353,7 @@ CREATE TABLE access AS
 
 ## Map
 
-### `mappluto` parcels with a `final_dist` of 1320 ft or lower
+### `mappluto` parcels with a `final_dist` of 1320 ft or less
 
 ![map1](/figures/map1.png)
 
