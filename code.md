@@ -24,7 +24,7 @@ Online resources consulted for this analysis included the [PostGIS Manual](https
 
 # Main queries
 
-### (Description of purpose of section 1)
+### Find all `mappluto` parcels in NYC with a cumulative network distance of a 1/4 mile to the nearest subway entrance/exit.
 
 ***
 
@@ -171,7 +171,9 @@ UPDATE subway_ee s
 
 ## Step 5
 
-Informative network analysis using **pgr_drivingDistance**, from `subway_ee` points to all network vertices within 1320 ft (1/4 mile) network distance. Before that, create indices to prepare for final analysis queries.
+Create indices to prepare for final analysis queries. 
+
+Optional: an informative network analysis using **pgr_drivingDistance**, from `subway_ee` points to all network vertices within 1320 ft (1/4 mile) network distance.
 
 ### Create indices
 ```sql
@@ -180,7 +182,7 @@ CREATE INDEX ON mappluto (vid);
 CREATE INDEX ON lion (target);
 CREATE INDEX ON lion (source);
 ```
-### Driving distance
+### Driving distance (optional)
 ```sql
 CREATE TABLE dd_nyc AS
     SELECT
@@ -211,7 +213,7 @@ Calculative cumulative distance from each subway point to parcel `network_snap` 
 
 To do this, find the *smaller* sum of the minimum `nw_dist` to a subway point + the euclidean distance to the `network_snap` parcel point for each of the two network vertices (`source` and `target`) on the edge that each `mappluto` `network_snap` parcel is on.
 
-### Driving distance 2
+### Driving distance
 Create a table of just the *minimum* distances from subway points to network vertices – this is smaller, has one row per each network `vid`, and is easier for the final distance calculation and analysis.
 ```sql
 CREATE TABLE dd_nyc_min AS
@@ -355,20 +357,82 @@ CREATE TABLE access AS
 
 ***
 
-# Analyze access
-
-### (Description of purpose of section 2)
-
-***
+# Subway access at the NTA (Neighborhood Tabulation Area) level
 
 ## Step 7
 
-description
+Create columns in `ntas` table and add `ntaname` column to `mappluto`.
 
 ```sql
+ALTER TABLE ntas
+    ADD COLUMN total_parcels bigint,
+    ADD COLUMN access_parcels bigint,
+    ADD COLUMN pct_access double precision;
 
+ALTER TABLE mappluto
+    ADD COLUMN ntaname text;
 ```
 
-`ntas` - summary, map of % access of parcels by nta
+***
 
-`boroughs` - summary of % access of parcels by borough
+## Step 8
+
+Add `ntaname` values to `mappluto` from `ntas` using **ST_Contains** with `pos_geom`.
+
+```sql
+    -- create spatial indices
+CREATE INDEX ON mappluto USING GIST(pos_geom);
+CREATE INDEX ON ntas USING GIST(geom);
+
+UPDATE mappluto p
+    SET ntaname = n.ntaname
+    FROM ntas n
+    WHERE ST_Contains(
+        n.geom,
+        p.pos_geom
+    );
+```
+
+***
+
+## Step 9
+
+Count `total_parcels` and `accessible_parcels` for `ntas`.
+
+```sql
+UPDATE ntas n
+    SET
+        total_parcels = s.total_parcels,
+        accessible_parcels = s.accessible_parcels
+    FROM (
+        SELECT
+            ntaname,
+            COUNT(*) AS total_parcels,
+            COUNT(*) FILTER (
+                WHERE final_dist <= 1320
+            ) AS accessible_parcels
+        FROM mappluto
+        GROUP BY ntaname
+    ) s
+    WHERE n.ntaname = s.ntaname;
+```
+
+***
+
+## Step 10
+
+Calculate `pct_accessible` percent of parcels with access in `ntas`, use `NULLIF` to prevent issues with dividing by NTAs with 0 parcels.
+
+```sql
+UPDATE ntas
+    SET pct_accessible =
+        (accessible_parcels::double precision
+        / NULLIF(total_parcels, 0)) * 100;
+```
+
+***
+
+## Map
+
+### Percent of `mappluto` parcels in `ntas` within 1/4 mile cumulative network distance to a subway entrance
+![map2](/figures/map2.png)

@@ -3,6 +3,7 @@ CREATE INDEX ON mappluto (vid);
 CREATE INDEX ON lion (target);
 CREATE INDEX ON lion (source);
 
+    -- optional
 CREATE TABLE dd_nyc AS
     SELECT
         s.id,
